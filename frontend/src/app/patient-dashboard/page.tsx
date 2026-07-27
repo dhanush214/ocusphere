@@ -28,21 +28,21 @@ export default function PatientDashboard() {
   const [screeningError, setScreeningError] = useState("");
 
   useEffect(() => {
-    const storedPatient = localStorage.getItem("ocusphere_patient");
+    const storedPatient = localStorage.getItem("patient");
 
     if (!storedPatient) {
       router.push("/patient-login");
       return;
     }
 
-    try {
-      const parsedPatient: Patient = JSON.parse(storedPatient);
-      setPatient(parsedPatient);
+    const patientData: Patient = JSON.parse(storedPatient);
 
-      loadScreenings(parsedPatient.phone);
-    } catch {
-      localStorage.removeItem("ocusphere_patient");
-      router.push("/patient-login");
+    setPatient(patientData);
+
+    if (patientData.phone) {
+      loadScreenings(patientData.phone);
+    } else {
+      setLoading(false);
     }
   }, [router]);
 
@@ -79,8 +79,8 @@ export default function PatientDashboard() {
   }
 
   function logout() {
-    localStorage.removeItem("ocusphere_patient");
-    router.push("/login");
+    localStorage.removeItem("patient");
+    router.push("/patient-login");
   }
 
   function getPrediction(screening: Screening) {
@@ -120,7 +120,9 @@ export default function PatientDashboard() {
     return (
       <main className="min-h-screen bg-[#020817] text-white">
         <div className="flex min-h-screen items-center justify-center">
-          <p className="text-slate-400">Loading patient dashboard...</p>
+          <p className="text-slate-400">
+            Loading patient dashboard...
+          </p>
         </div>
       </main>
     );
@@ -129,7 +131,6 @@ export default function PatientDashboard() {
   return (
     <main className="min-h-screen bg-[#020817] text-white">
       <div className="mx-auto max-w-6xl px-6 py-10 md:px-10">
-        {/* Header */}
 
         <header className="flex flex-col justify-between gap-6 border-b border-white/10 pb-8 md:flex-row md:items-center">
           <div>
@@ -163,8 +164,6 @@ export default function PatientDashboard() {
           </div>
         </header>
 
-        {/* Patient welcome */}
-
         <section className="mt-8 rounded-3xl border border-cyan-500/20 bg-[#06101f] p-8">
           <p className="text-sm font-semibold text-cyan-300">
             Welcome to OcuSphere
@@ -176,24 +175,33 @@ export default function PatientDashboard() {
 
           <p className="mt-4 max-w-2xl leading-7 text-slate-400">
             Use your dashboard to start an AI-assisted retinal screening,
-            find professional eye care, review previous screening results or
-            track an appointment request.
+            find professional eye care, review previous screening results
+            or track an appointment request.
           </p>
 
           <div className="mt-6 flex flex-wrap gap-3">
             <div className="rounded-xl border border-white/10 bg-[#0b1629] px-4 py-3">
-              <p className="text-xs text-slate-500">Patient</p>
-              <p className="font-semibold">{patient.name}</p>
+              <p className="text-xs text-slate-500">
+                Patient
+              </p>
+
+              <p className="font-semibold">
+                {patient.name}
+              </p>
             </div>
 
             <div className="rounded-xl border border-white/10 bg-[#0b1629] px-4 py-3">
-              <p className="text-xs text-slate-500">Phone</p>
-              <p className="font-semibold">{patient.phone}</p>
+              <p className="text-xs text-slate-500">
+                Phone
+              </p>
+
+              <p className="font-semibold">
+                {patient.phone}
+              </p>
             </div>
           </div>
         </section>
-
-        {/* Services */}
+                {/* Services */}
 
         <section className="mt-12">
           <p className="text-xs font-bold tracking-[0.35em] text-cyan-300">
@@ -205,6 +213,7 @@ export default function PatientDashboard() {
           </h2>
 
           <div className="mt-7 grid gap-5 md:grid-cols-3">
+
             {/* Scan */}
 
             <div className="rounded-3xl border border-cyan-500/20 bg-[#081426] p-7">
@@ -245,8 +254,8 @@ export default function PatientDashboard() {
               </h3>
 
               <p className="mt-3 min-h-[72px] leading-6 text-slate-400">
-                Browse OcuSphere eye-care providers and continue directly
-                to appointment booking.
+                Browse OcuSphere eye-care providers and continue
+                directly to appointment booking.
               </p>
 
               <button
@@ -271,8 +280,8 @@ export default function PatientDashboard() {
               </h3>
 
               <p className="mt-3 min-h-[72px] leading-6 text-slate-400">
-                Enter your OcuSphere Request ID to check the current status
-                of an appointment request.
+                Enter your OcuSphere Request ID to check the current
+                status of an appointment request.
               </p>
 
               <button
@@ -282,10 +291,11 @@ export default function PatientDashboard() {
                 Track Appointment →
               </button>
             </div>
+
           </div>
         </section>
 
-        {/* Screening history */}
+        {/* Screening History */}
 
         <section className="mt-12">
           <div className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
@@ -354,8 +364,7 @@ export default function PatientDashboard() {
                 </button>
               </div>
             )}
-
-          {!loading && screenings.length > 0 && (
+                      {!loading && screenings.length > 0 && (
             <div className="mt-6 space-y-4">
               {screenings.map((screening, index) => (
                 <article
@@ -363,6 +372,7 @@ export default function PatientDashboard() {
                   className="rounded-2xl border border-cyan-500/20 bg-[#081426] p-6"
                 >
                   <div className="flex flex-col justify-between gap-5 md:flex-row md:items-center">
+
                     <div>
                       <p className="text-xs font-bold tracking-[0.25em] text-cyan-300">
                         SCREENING #{screenings.length - index}
@@ -380,6 +390,7 @@ export default function PatientDashboard() {
                     </div>
 
                     <div className="grid grid-cols-2 gap-3">
+
                       <div className="rounded-xl border border-white/10 bg-[#0c172b] px-5 py-3">
                         <p className="text-xs text-slate-500">
                           Confidence
@@ -401,17 +412,21 @@ export default function PatientDashboard() {
                             : "Available in result"}
                         </p>
                       </div>
+
                     </div>
+
                   </div>
                 </article>
               ))}
             </div>
           )}
+
         </section>
 
         {/* Journey */}
 
         <section className="mt-12 rounded-3xl border border-white/10 bg-[#081120] p-7">
+
           <p className="text-xs font-bold tracking-[0.3em] text-cyan-300">
             YOUR OCUSPHERE JOURNEY
           </p>
@@ -421,6 +436,7 @@ export default function PatientDashboard() {
           </h2>
 
           <div className="mt-6 grid gap-4 md:grid-cols-4">
+
             {[
               ["01", "Upload", "Upload a retinal fundus image."],
               [
@@ -447,17 +463,20 @@ export default function PatientDashboard() {
                   {number}
                 </p>
 
-                <h3 className="mt-4 font-bold">{title}</h3>
+                <h3 className="mt-4 font-bold">
+                  {title}
+                </h3>
 
                 <p className="mt-2 text-sm leading-6 text-slate-400">
                   {description}
                 </p>
               </div>
             ))}
-          </div>
-        </section>
 
-        {/* Notice */}
+          </div>
+
+        </section>
+                {/* Medical Notice */}
 
         <section className="mt-8 rounded-2xl border border-yellow-500/20 bg-yellow-500/5 p-6">
           <p className="font-semibold text-yellow-300">
@@ -472,6 +491,7 @@ export default function PatientDashboard() {
             professional.
           </p>
         </section>
+
       </div>
     </main>
   );
