@@ -1,0 +1,37 @@
+{
+    "architecture": "ResNet50",
+    "num_classes": 5,
+    "input_size": [
+        224,
+        224
+    ],
+    "channels": 3,
+    "class_names": {
+        "0": "No Diabetic Retinopathy",
+        "1": "Mild Diabetic Retinopathy",
+        "2": "Moderate Diabetic Retinopathy",
+        "3": "Severe Diabetic Retinopathy",
+        "4": "Proliferative Diabetic Retinopathy"
+    },
+    "normalization": {
+        "mean": [
+            0.485,
+            0.456,
+            0.406
+        ],
+        "std": [
+            0.229,
+            0.224,
+            0.225
+        ]
+    },
+    "performance": {
+        "validation_images": 366,
+        "accuracy": 0.7295,
+        "qwk": 0.8377,
+        "mae": 0.3607,
+        "rmse": 0.7539
+    },
+    "purpose": "Diabetic Retinopathy Screening",
+    "warning": "Research/screening model. Not intended to replace professional medical diagnosis."
+}
